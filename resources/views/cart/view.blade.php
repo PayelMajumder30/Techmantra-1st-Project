@@ -17,75 +17,84 @@
         @if(Session::has('success'))
         <div class="alert alert-success">{{ Session::get('success') }}</div>
         @endif
-        <table class="modal-header">
+        <table class="table table-bordered">
             <tr>
                 <th>Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total Price</th>
+                <th>Action</th>
             </tr>
             @foreach($cart as $id => $item)
             <tr>
                 <td>{{ $item['name']}}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-secondary decrement" data-id="{{ $id }}">-</button>
-                    <input type="number" class="form-control text-center quantity" data-id="{{ $id }}" value="{{ $item['quantity'] }}" min="1" disabled>
-                    <button class="btn btn-sm btn-outline-secondary increment" data-id="{{ $id }}">+</button>
+                    <button class="btn btn-sm btn-outline-secondary decrement" onclick="decrement({{$id}})">-</button>
+                    <input type="number" class="form-control text-center quantity" id="quantity-{{$id}}" value="{{$item['quantity']}}" min="1" disabled>
+                    <button class="btn btn-sm btn-outline-secondary increment" onclick="increment({{$id}})">+</button>
                 </td>
-                <td class="price">{{$item['price']}}</td>
-                <td class="total-price" data-id="{{$id}}">{{$item['total_price']}}</td>
+                <td class="price" id="price-{{$id}}">{{$item['price']}}</td>
+                <td class="total-price" id="total-price-{{$id}}">{{$item['total_price']}}</td>
+                <td>
+                    <form action="{{route('cart.delete', $id)}}" method="POST" onsubmit="return confirm('Are you delete this item?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"class="btn btn-sm btn-danger">Delete Item</button>
+                    </form>         
+                </td>               
             </tr>
             @endforeach
         </table>
+        <form action="{{ route('cart.placeOrder') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-primary">Place Order</button>
+        </form>
     </div> 
     
-    {{-- <script>
-       document.querySelectorAll('.increment, .decrement').forEach(button=> {
-        button.addEvenetListner('click', function(){
-            let id = this.dataset.id;
-            let quantityInput = document.querySelector(`.quantity[data-id]="${id}"`);
-            let price = parseFloat(document.querySelector(`.price[data-id]="${id}"`).innerText);
-            let totalPriceElement = document.querySelector(`.total-price[data-id]="${id}"`);
-            let currentQuantity = parseInt(quantityInput.value);
-            if(this.classList.contains('increment')){
-                currentQuantity++;   
-            }else if(this.classList.contains('decrement') && currentQuantity >1){
-                currentQuantity--;
-            }
-            quantityInput.value = currentQuantity;
-            totalPriceElement.innerText = (price * currentQuantity.toFixed(2));
-        });
-       });
-    </script> --}}
     <script>
-       $(document).ready(function () {
-          $('.increment').on("click",function(){
-            let id = $(this).data('id');  
-            let quantityInput = $(`.quantity[data-id="${id}"]`);  
-            let price = parseFloat($(`.price[data-id="${id}"]`).text());  
-            alert('')
-            let totalPriceElement = $(`.total-price[data-id="${id}"]`);  
+        function increment(id){
+            $('#cart_update_error').text('');
+            $('#cart_update_error').text('');
 
-            let currentQuantity = parseInt(quantityInput.val());  
-            currentQuantity++;  
-            quantityInput.val(currentQuantity);  
-            // totalPriceElement.text(Math.round(price * currentQuantity)); 
-          });
+            let currentQuantity = parseInt($(`#quantity-${id}`).val());
+            if(currentQuantity == 10){
+                $('#cart_update_error').text('Maximum order quantity is 10');
+                $('#cart_update_error').show();
+                $('#cart_update_success').hide();
+            } else{
+                currentQuantity++;
 
-          $('.decrement').on("click",function(){
-            let id = $(this).data('id');  
-            let quantityInput = $(`.quantity[data-id="${id}"]`);  
-            let price = parseFloat($(`.price[data-id="${id}"]`).text());  
-            let totalPriceElement = $(`.total-price[data-id="${id}"]`);  
-
-            let currentQuantity = parseInt(quantityInput.val());  
-            if (currentQuantity > 1) {  
-                currentQuantity--;  
-                quantityInput.val(currentQuantity);  
-                totalPriceElement.text((price * currentQuantity).toFixed(2));  
+                let price = parseFloat($(`#price-${id}`).text());
+                $(`#quantity-${id}`).val(currentQuantity);
+                const updatedTotalPrice = Math.round(price * currentQuantity);
+                $(`#total-price-${id}`).text(updatedTotalPrice);
+                $('#cart_update_success').text('Cart is updated successfully');
+                $('#cart_update_success').show();
+                $('#cart_update_error').hide();
             }
-          });
-       });
+        }
+        function decrement(id){
+            $('#cart_update_error').text('');
+            $('#cart_update_success').text('');
+            
+            let currentQuantity = parseInt($(`#quantity-${id}`).val());
+            if (currentQuantity == 1) {
+                $('#cart_update_error').text('Minimum order quantity is 1');
+                $('#cart_update_error').show();
+                $('#cart_update_success').hide();
+            } else {
+                currentQuantity--;
+
+                let price = parseFloat($(`#price-${id}`).text()); 
+                $(`#quantity-${id}`).val(currentQuantity);
+                const updatedTotalPrice = Math.round(price * currentQuantity);
+                $(`#total-price-${id}`).text(updatedTotalPrice);
+                $('#cart_update_success').text('Cart is updated successfully');
+                $('#cart_update_success').show();
+                $('#cart_update_error').hide();
+            }
+        }
+
     </script>
 </body>
 </html>

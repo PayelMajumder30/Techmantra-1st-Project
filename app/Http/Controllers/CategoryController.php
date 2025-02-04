@@ -42,9 +42,7 @@ class CategoryController extends Controller
          }elseif($category == null){
            // echo "unable to insert";
             return to_route('categories.add')->with('error','Field is required');
-         } 
-       
-      
+         }  
     }
 
     public function categoryList(){
