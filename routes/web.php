@@ -39,8 +39,9 @@ Route::group(['middleware' => ['auth', IsAdmin::class], 'prefix' => 'admin'], fu
     Route::get('orders/list', [OrderController::class, 'listOrder'])->name('orders.list');
     Route::get('orders/price', [OrderController::class, 'priceOrder'])->name('price');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
-    Route::get('/cart', [cartController::class, 'viewCart'])->name('cart.view');
+    Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::post('/cart/place-order', [CartController::class, 'placeOrder'])->name('cart.placeOrder');
     Route::get('/cart/show', [CartController::class, 'showOrder'])->name('cart.showOrder');
     Route::delete('/cart/remove/{id}', [CartController::class, 'deleteCartItem'])->name('cart.delete');
+    Route::get('/cart/details', [CartController::class, 'custDetails'])->name('cart.details');
 });

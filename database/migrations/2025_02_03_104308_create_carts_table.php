@@ -17,6 +17,12 @@ return new class extends Migration
             $table->integer('quantity');
             $table->double('price');
             $table->double('total_price');
+            $table->foreignId('order_id')->references('id')->on('orders');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('streetaddress');
+            $table->string('pin');
+            $table->string('city');
             $table->timestamps();
         });
     }

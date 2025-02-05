@@ -79,7 +79,7 @@ class CategoryController extends Controller
 
         Category::where('id', $id)->update([
             'title' => $request->edtitle,
-            'image'   => $filePath,
+            'image' => $filePath,
         ]);
 
         $category = Category::find($id);
