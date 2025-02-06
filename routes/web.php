@@ -21,6 +21,7 @@ Route::post('/admin/login', [AdminController::class, 'submitLogin'])->name('admi
 Route::group(['middleware' => ['auth', IsAdmin::class], 'prefix' => 'admin'], function(){
     Route::get('logout',[AdminController::class, 'logout'])->name('admin.logout');
     Route::get('dashboard',[AdminController::class,'dashboard'])->name('admin.dashboard');
+ 
     Route::get('products/list',[ProductController::class, 'productList'])->name('products.list')->withoutMiddleware([IsAdmin::class]);
     Route::get('products/add',[ProductController::class, 'addProduct'])->name('products.add');
     Route::post('products/add',[ProductController::class, 'storeProduct'])->name('products.store');
